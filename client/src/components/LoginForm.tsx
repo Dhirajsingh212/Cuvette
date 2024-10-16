@@ -1,8 +1,50 @@
-import { Mail, PhoneCall, SquareUser, User } from "lucide-react";
+import { BASE_URL } from "@/api";
+import axios from "axios";
+import { Mail } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import CustomInput from "./CustomInput";
 import { Button } from "./ui/button";
+import { useSetRecoilState } from "recoil";
+import { isLoggedIn } from "@/atoms/atom";
 
 const LoginForm = () => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const setIsLoggedInStateValue = useSetRecoilState(isLoggedIn);
+
+  const submitHandler = async () => {
+    if (!email.trim()) {
+      toast.error("email is required");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        `${BASE_URL}/api/v1/auth/login`,
+        {
+          email,
+        },
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        toast.success("Successfully signed up.");
+        setIsLoggedInStateValue(true);
+        setEmail("");
+        navigate("/dashboard");
+      } else {
+        throw new Error("Something went wrong.");
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to login");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-row justify-between lg:px-10 w-full h-screen">
       <div className="lg:visible hidden max-w-xl lg:flex flex-col justify-center items-center">
@@ -18,33 +60,26 @@ const LoginForm = () => {
       <div className="flex flex-col lg:items-end justify-center w-full ">
         <div className="border shadow-xl border-blue-500 p-4 rounded-xl lg:w-8/12 ">
           <p className="flex flex-col gap-2 items-center text-xl font-semibold py-4">
-            Sign up
+            Login
             <span className="text-base font-thin">
               Lorem, ipsum dolor sit amet.
             </span>
           </p>
           <div className="flex flex-col gap-4">
-            <CustomInput placeholder="Name" type="text">
-              <User className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-            </CustomInput>
-            <CustomInput placeholder="Phone no." type="text">
-              <PhoneCall className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-            </CustomInput>
-            <CustomInput placeholder="Company Name" type="text">
-              <User className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-            </CustomInput>
-            <CustomInput placeholder="Company Email" type="email">
+            <CustomInput
+              value={email}
+              name="email"
+              changeHandler={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setEmail(e.target.value);
+              }}
+              placeholder="Company Email"
+              type="email"
+            >
               <Mail className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             </CustomInput>
-            <CustomInput placeholder="Employee Size" type="number">
-              <SquareUser className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-            </CustomInput>
-            <p className="text-center py-2 lg:px-8">
-              By clicking on proceed you wil accept our{" "}
-              <span className="text-blue-500">Terms</span> &{" "}
-              <span className="text-blue-500">Conditions</span>
-            </p>
-            <Button>Signup</Button>
+            <Button disabled={isLoading} onClick={submitHandler}>
+              Login
+            </Button>
           </div>
         </div>
       </div>

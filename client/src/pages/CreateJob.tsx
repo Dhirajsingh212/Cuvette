@@ -1,3 +1,5 @@
+import { BASE_URL } from "@/api";
+import { isLoggedIn } from "@/atoms/atom";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,10 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
 import { format } from "date-fns";
 import { X } from "lucide-react";
 import { ChangeEvent, KeyboardEvent, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 
 interface Form {
   title: string;
@@ -31,6 +36,7 @@ const CreateJob = () => {
     date: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => {
@@ -74,11 +80,6 @@ const CreateJob = () => {
       return false;
     }
 
-    if (!/^\d+$/.test(experience) || Number(experience) < 0) {
-      toast.error("Experience must be a non-negative number.");
-      return false;
-    }
-
     if (emails.length === 0) {
       toast.error("At least one email is required.");
       return false;
@@ -112,8 +113,29 @@ const CreateJob = () => {
     }
 
     setIsLoading(true);
-
     try {
+      const response = await axios.post(
+        `${BASE_URL}/api/v1/jobs/create`,
+        {
+          ...formData,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Successfully posted");
+        setFormData({
+          title: "",
+          description: "",
+          experience: "",
+          emails: [],
+          date: "",
+        });
+      } else {
+        toast.error("Failed to post");
+      }
     } catch (err) {
       console.log(err);
       toast.error("Failed to create job.");
@@ -168,12 +190,22 @@ const CreateJob = () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
+  const [isLoggedInState, setIsLoggedInState] = useRecoilState(isLoggedIn);
+
+  if (!isLoggedInState) {
+    return (
+      <div className="flex flex-row justify-start pt-6 text-2xl font-light text-gray-500">
+        Login first
+      </div>
+    );
+  }
+
   return (
     <div className="border-t flex flex-row gap-2">
       <Sidebar />
       <div className=" p-2 w-full overflow-y-scroll h-[89vh] no-scrollbar">
         <p className="text-xl font-semibold text-blue-500 pb-4">Create Jobs</p>
-        <div className="w-full max-w-lg mx-auto px-4 sm:p-8  border border-blue-500 shadow-xl rounded-lg ">
+        <div className="w-full max-w-lg mx-auto p-4 sm:p-8  border border-blue-500 shadow-xl rounded-lg ">
           <form onSubmit={submitHandler} className="space-y-4">
             <div className="sm:flex sm:items-center">
               <label
@@ -252,14 +284,14 @@ const CreateJob = () => {
               </div>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-start flex-col sm:flex-row ">
               <label
                 htmlFor="addCandidate"
-                className="w-1/3 text-right pr-4 text-sm font-medium text-gray-700"
+                className="w-full sm:w-1/3 text-start sm:text-right pr-4 text-sm font-medium text-gray-700"
               >
                 Add Candidate
               </label>
-              <div className="w-2/3 relative">
+              <div className="w-full sm:w-2/3 relative">
                 <div className="flex flex-wrap items-center gap-1 p-2 border rounded-md bg-white">
                   {formData.emails.map((email, index) => (
                     <div

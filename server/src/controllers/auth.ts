@@ -1,16 +1,23 @@
+import { Request, Response } from "express";
 import { prisma } from "../db/db";
 import { otpSchema, userSchema } from "../types";
 import { genToken } from "../utils";
 import { generateOTP, sendVerificationEmail } from "../utils/mailService";
 import { client } from "../utils/numberService";
-import { NextFunction, Request, Response } from "express";
 
 export async function LoginFunction(req: Request, res: Response) {
   try {
-    const { username } = req.body;
+    const { email } = req.body;
+    if (!email) {
+      return res.status(404).json({
+        success: false,
+        message: "Incomplete details",
+      });
+    }
+
     const user = await prisma.user.findFirst({
       where: {
-        name: username,
+        companyEmail: email,
       },
     });
     if (!user) {
@@ -138,6 +145,25 @@ export async function VerifyOTPFunction(req: Request, res: Response) {
     return res.status(200).json({
       success: true,
       message: "successfull",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+}
+
+export async function LogoutFunction(req: Request, res: Response) {
+  try {
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
     });
   } catch (err) {
     console.log(err);

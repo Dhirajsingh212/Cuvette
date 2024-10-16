@@ -19,6 +19,7 @@ export const otpSchema = z.object({
 });
 
 export const jobSchema = z.object({
+  userId: z.string(),
   title: z
     .string()
     .min(1, { message: "Title is required." })
@@ -29,13 +30,7 @@ export const jobSchema = z.object({
     .min(1, { message: "Description is required." })
     .max(500, { message: "Description must be less than 500 characters." }),
 
-  experience: z
-    .string()
-    .refine((value) => /^\d+$/.test(value), {
-      message: "Experience must be a non-negative number.",
-    })
-    .transform(Number) // Convert to a number
-    .min(0, { message: "Experience must be a non-negative number." }),
+  experience: z.string(),
 
   emails: z
     .array(z.string().email(), {
@@ -53,5 +48,5 @@ export const jobSchema = z.object({
       },
       { message: "Date cannot be in the past." }
     )
-    .optional(), // Optional field
+    .optional(),
 });

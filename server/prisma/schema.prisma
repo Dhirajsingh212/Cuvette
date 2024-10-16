@@ -23,11 +23,11 @@ model User {
 
 model Job {
   id          String   @id @default(uuid())
-  title       String
+  title       String   
   description String
   experience  String
   emails      String[] 
-  date        DateTime
+  date        String
   userId      String   
   user        User     @relation("UserJobs", fields: [userId], references: [id]) // Establish relationship
 }

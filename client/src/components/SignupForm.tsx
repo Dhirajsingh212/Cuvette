@@ -6,6 +6,8 @@ import { Button } from "./ui/button";
 import axios from "axios";
 import { BASE_URL } from "@/api";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
+import { isLoggedIn } from "@/atoms/atom";
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +19,7 @@ const SignupForm = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const setIsLoggedInStateValue = useSetRecoilState(isLoggedIn);
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => {
@@ -75,6 +78,7 @@ const SignupForm = () => {
       );
       if (response.status === 200) {
         toast.success("Successfully signed up.");
+        setIsLoggedInStateValue(true);
         setFormData({
           name: "",
           phoneNumber: "",

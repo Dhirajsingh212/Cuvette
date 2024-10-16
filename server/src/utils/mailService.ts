@@ -24,3 +24,33 @@ export const sendVerificationEmail = async (email: string, otp: number) => {
     throw new Error("Failed to send verification email.");
   }
 };
+
+export async function sendCompanyDetails(
+  emails: string[],
+  jobDetails: any,
+  userEmail: string
+) {
+  try {
+    const emailPromises = emails.map((email) =>
+      resend.emails.send({
+        from: "Acme <onboarding@resend.dev>",
+        to: email,
+        subject: `New Job Opening: ${jobDetails.title}`,
+        html: `
+          <h1>New Job Opening at ${jobDetails.title}</h1>
+          <p><strong>Title:</strong> ${jobDetails.title}</p>
+          <p><strong>Description:</strong> ${jobDetails.description}</p>
+          <p><strong>Experience Required:</strong> ${jobDetails.experience}</p>
+          <p><strong>Date Posted:</strong> ${jobDetails.date}</p>
+          <p><strong>Contact Email:</strong> ${jobDetails.userEmail}</p>
+        `,
+      })
+    );
+
+    await Promise.all(emailPromises);
+    console.log("Emails sent successfully");
+  } catch (error) {
+    console.error("Error sending emails", error);
+    throw new Error("Failed to send emails");
+  }
+}
