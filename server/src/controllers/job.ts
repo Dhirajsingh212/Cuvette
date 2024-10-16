@@ -60,3 +60,24 @@ export async function CreateJobFunction(req: Request, res: Response) {
     });
   }
 }
+
+export async function GetAllJobFunction(req: Request, res: Response) {
+  try {
+    const { userId } = req.body;
+    const allJobs = await prisma.job.findMany({
+      where: {
+        userId,
+      },
+    });
+    return res.status(200).json({
+      success: true,
+      jobData: allJobs,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+}

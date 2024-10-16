@@ -134,9 +134,9 @@ const CreateJob = () => {
       } else {
         toast.error("Failed to post");
       }
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed to create job.");
+    } catch (err: any) {
+      const msg = err.response.data.message;
+      toast.error(`${msg}`);
     } finally {
       setIsLoading(false);
     }

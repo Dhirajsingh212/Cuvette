@@ -28,15 +28,18 @@ services:
     depends_on:
       - db
       - redis
+      - mailhog # Added dependency on MailHog
     environment:
       - POSTGRES_PASSWORD=postgres
-      - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/mydb4?schema=public
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/mydb4
       - SECRET=asguyfsRYTGUIB23456789
       - END=30d
       - NODE_ENV=development
       - PORT=8000
       - REDIS_URL=redis://redis:6379
       - ORIGIN="http://localhost:5173"
+      - SMTP_HOST=mailhog # Set SMTP host to MailHog
+      - SMTP_PORT=1025 # Set SMTP port to MailHog's default
     volumes:
       - ./server:/server
 
@@ -51,6 +54,13 @@ services:
       - VITE_BASE_URL=http://localhost:8000
     volumes:
       - ./client:/client
+
+  mailhog: # Added MailHog service
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "8025:8025" # MailHog web interface
+      - "1025:1025" # SMTP server
 
 volumes:
   db:

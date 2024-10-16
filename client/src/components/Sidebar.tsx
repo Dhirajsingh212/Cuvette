@@ -1,4 +1,4 @@
-import { House, PlusCircleIcon } from "lucide-react";
+import { House, PlusCircleIcon, Settings } from "lucide-react";
 
 const Sidebar = () => {
   return (
@@ -9,6 +9,9 @@ const Sidebar = () => {
         </a>
         <a href="/dashboard/create">
           <PlusCircleIcon className="text-gray-500" />
+        </a>
+        <a href="/settings">
+          <Settings className="text-gray-500" />
         </a>
       </div>
     </div>
