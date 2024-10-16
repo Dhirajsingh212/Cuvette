@@ -1,14 +1,19 @@
 import { BASE_URL } from "@/api";
+import { isLoggedIn } from "@/atoms/atom";
 import JobsCard from "@/components/JobsCard";
 import Sidebar from "@/components/Sidebar";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 
 const Dashboard = () => {
   const [jobData, setJobData] = useState([]);
+  const [isLoggedInState, _] = useRecoilState(isLoggedIn);
 
   useEffect(() => {
     async function fetchJobData() {
+      if (!isLoggedInState) return;
+
       const response = await axios.get(`${BASE_URL}/api/v1/jobs/getAllJob`, {
         withCredentials: true,
       });

@@ -8,6 +8,7 @@ const CustomInput = ({
   value,
   changeHandler,
   name,
+  disabled,
 }: {
   children: ReactNode;
   placeholder: string;
@@ -15,11 +16,13 @@ const CustomInput = ({
   value: string | number;
   changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name: string;
+  disabled?: any;
 }) => {
   return (
     <div className="relative w-full">
       {children}
       <Input
+        disabled={disabled ? disabled : false}
         className="pl-8 bg-gray-100 border-gray-300 text-gray-900 focus:ring-gray-500 focus:border-gray-500"
         placeholder={placeholder}
         type={type}

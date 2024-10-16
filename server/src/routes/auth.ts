@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  GetVerficationDetails,
   LoginFunction,
   LogoutFunction,
   SignupFunction,
@@ -12,5 +13,6 @@ router.route("/login").post(LoginFunction);
 router.route("/logout").post(LogoutFunction);
 router.route("/signup").post(SignupFunction);
 router.route("/verify/otp").post(authMiddleware, VerifyOTPFunction);
+router.route("/check/verification").get(authMiddleware, GetVerficationDetails);
 
 export default router;
