@@ -16,7 +16,6 @@ import { format } from "date-fns";
 import { X } from "lucide-react";
 import { ChangeEvent, KeyboardEvent, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 
 interface Form {
@@ -36,7 +35,6 @@ const CreateJob = () => {
     date: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => {
@@ -190,7 +188,7 @@ const CreateJob = () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const [isLoggedInState, setIsLoggedInState] = useRecoilState(isLoggedIn);
+  const [isLoggedInState, _] = useRecoilState(isLoggedIn);
 
   if (!isLoggedInState) {
     return (
