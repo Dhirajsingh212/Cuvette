@@ -24,6 +24,14 @@ const Dashboard = () => {
     fetchJobData();
   }, []);
 
+  if (!isLoggedInState) {
+    return (
+      <div className="flex flex-row justify-start pt-6 text-2xl font-light text-gray-500">
+        Login first
+      </div>
+    );
+  }
+
   return (
     <div className="border-t flex flex-row gap-2">
       <Sidebar />
