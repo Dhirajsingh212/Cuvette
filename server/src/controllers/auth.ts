@@ -239,13 +239,13 @@ export async function SendOtpFunction(req: Request, res: Response) {
 
     await sendVerificationEmail(userDetails.companyEmail, Number(otp));
 
-    // client.messages
-    //   .create({
-    //     body: `${otp}`,
-    //     from: "+18644028672",
-    //     to: `+91${userDetails.phoneNumber}`,
-    //   })
-    //   .then((message) => console.log(message.sid));
+    client.messages
+      .create({
+        body: `${otp}`,
+        from: "+18644028672",
+        to: `+91${userDetails.phoneNumber}`,
+      })
+      .then((message) => console.log(message.sid));
 
     return res.status(200).json({
       success: true,
